@@ -2,47 +2,26 @@
 #include "student_list.h"
 #include "hash_table.h"
 #include "room.h"
+#include "file_handler.h"
 
 int main() {
 
-    printf("===== HOSTEL ROOM ALLOCATION SYSTEM =====\n");
+    printf("===== FILE LOADING TEST =====\n");
 
+    // Initialize rooms before loading students
     initializeRooms();
 
-    printf("\n--- ADD STUDENTS ---\n");
+    printf("\n--- LOADING SAVED DATA ---\n");
 
-    addStudent(24001, "Praveen", "CSE", 2, "F-01");
-    addStudent(24002, "Arun", "ECE", 2, "F-01");
-    addStudent(24003, "Karthik", "CSE", 1, "F-02");
+    loadStudents();
 
-    printf("\n--- INITIAL STATUS ---\n");
+    printf("\n--- LOADED STUDENTS ---\n");
     displayStudents();
+
+    printf("\n--- HASH TABLE ---\n");
     displayHashTable();
-    displayRooms();
 
-    printf("\n--- MOVE STUDENT 24001 ---\n");
-
-    updateStudent(24001, "CSE", 2, "F-03");
-
-    printf("\n--- AFTER MOVE ---\n");
-    displayStudents();
-    displayRooms();
-
-    printf("\n--- VACATE STUDENT 24002 ---\n");
-
-    vacateRoom(24002);
-
-    printf("\n--- AFTER VACATING ---\n");
-    displayStudents();
-    displayRooms();
-
-    printf("\n--- DELETE STUDENT 24003 ---\n");
-
-    deleteStudent(24003);
-
-    printf("\n--- FINAL STATUS ---\n");
-    displayStudents();
-    displayHashTable();
+    printf("\n--- ROOM STATUS ---\n");
     displayRooms();
 
     return 0;

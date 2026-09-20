@@ -23,11 +23,14 @@ void addStudent(int id, const char name[],
         check = check->next;
     }
 
-    // Check room availability
+   // Check room availability if a room is being allocated
+if (strcmp(roomNumber, "NOT ALLOCATED") != 0) {
+
     if (!isRoomAvailable(roomNumber)) {
         printf("Room %s is not available.\n", roomNumber);
         return;
     }
+}
 
     // Create new student node
     Student *newNode = (Student *)malloc(sizeof(Student));
@@ -44,9 +47,10 @@ void addStudent(int id, const char name[],
     newNode->year = year;
     strcpy(newNode->roomNumber, roomNumber);
     newNode->next = NULL;
-
-    // Allocate room
+// Allocate room if the student has a room
+if (strcmp(roomNumber, "NOT ALLOCATED") != 0) {
     allocateRoom(roomNumber);
+}
 
     // Add to linked list
     if (head == NULL) {
@@ -239,4 +243,7 @@ void vacateRoom(int id) {
     }
 
     printf("Student %d not found.\n", id);
+}
+Student *getHead() {
+    return head;
 }

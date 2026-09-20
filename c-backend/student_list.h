@@ -17,5 +17,6 @@ void updateStudent(int id, const char newDepartment[],
 void deleteStudent(int id);
 
 void vacateRoom(int id);
+Student *getHead();
 
 #endif
