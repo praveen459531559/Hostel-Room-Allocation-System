@@ -1,0 +1,16 @@
+# Compiled C files
+*.exe
+*.o
+
+# VS Code
+.vscode/
+
+# Java compiled files
+*.class
+
+# Java build output
+bin/
+out/
+
+# Temporary files
+*.tmp
