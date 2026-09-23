@@ -8,20 +8,37 @@ public class Dashboard extends JFrame {
     public Dashboard() {
 
         setTitle("Hostel Room Allocation System");
+
         setSize(900, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(new Color(245, 247, 250));
-
-        // TITLE
-        JLabel title = new JLabel(
-                "HOSTEL ROOM ALLOCATION SYSTEM"
+        setDefaultCloseOperation(
+                JFrame.EXIT_ON_CLOSE
         );
 
+        setLocationRelativeTo(null);
+
+        // ===== MAIN PANEL =====
+
+        JPanel mainPanel =
+                new JPanel(new BorderLayout());
+
+        mainPanel.setBackground(
+                new Color(245, 247, 250)
+        );
+
+        // ===== TITLE =====
+
+        JLabel title =
+                new JLabel(
+                        "HOSTEL ROOM ALLOCATION SYSTEM"
+                );
+
         title.setFont(
-                new Font("Arial", Font.BOLD, 26)
+                new Font(
+                        "Arial",
+                        Font.BOLD,
+                        26
+                )
         );
 
         title.setHorizontalAlignment(
@@ -34,16 +51,29 @@ public class Dashboard extends JFrame {
                 )
         );
 
-        mainPanel.add(title, BorderLayout.NORTH);
-
-        // BUTTON PANEL
-        JPanel buttonPanel = new JPanel(
-                new GridLayout(2, 3, 20, 20)
+        mainPanel.add(
+                title,
+                BorderLayout.NORTH
         );
+
+        // ===== BUTTON PANEL =====
+
+        JPanel buttonPanel =
+                new JPanel(
+                        new GridLayout(
+                                2,
+                                3,
+                                20,
+                                20
+                        )
+                );
 
         buttonPanel.setBorder(
                 BorderFactory.createEmptyBorder(
-                        30, 50, 30, 50
+                        30,
+                        50,
+                        30,
+                        50
                 )
         );
 
@@ -51,7 +81,8 @@ public class Dashboard extends JFrame {
                 new Color(245, 247, 250)
         );
 
-        // BUTTONS
+        // ===== BUTTONS =====
+
         JButton addButton =
                 new JButton("Add Student");
 
@@ -70,27 +101,44 @@ public class Dashboard extends JFrame {
         JButton exitButton =
                 new JButton("Exit");
 
-        // ADD STUDENT
+        // ===== BUTTON ACTIONS =====
+
         addButton.addActionListener(
                 e -> openAddStudentWindow()
         );
 
-        // SEARCH STUDENT
         searchButton.addActionListener(
                 e -> openSearchStudentWindow()
         );
 
-        // EXIT
+        updateButton.addActionListener(
+                e -> openUpdateStudentWindow()
+        );
+
+        deleteButton.addActionListener(
+                e -> openDeleteStudentWindow()
+        );
+
+        roomButton.addActionListener(
+                e -> openRoomStatusWindow()
+        );
+
         exitButton.addActionListener(
                 e -> System.exit(0)
         );
 
-        // ADD BUTTONS
+        // ===== ADD BUTTONS =====
+
         buttonPanel.add(addButton);
+
         buttonPanel.add(searchButton);
+
         buttonPanel.add(updateButton);
+
         buttonPanel.add(deleteButton);
+
         buttonPanel.add(roomButton);
+
         buttonPanel.add(exitButton);
 
         mainPanel.add(
@@ -101,13 +149,19 @@ public class Dashboard extends JFrame {
         setContentPane(mainPanel);
     }
 
-    // ADD STUDENT WINDOW
+    // =====================================================
+    // ADD STUDENT
+    // =====================================================
+
     private void openAddStudentWindow() {
 
         JFrame addFrame =
                 new JFrame("Add Student");
 
-        addFrame.setSize(500, 550);
+        addFrame.setSize(
+                500,
+                550
+        );
 
         addFrame.setDefaultCloseOperation(
                 JFrame.DISPOSE_ON_CLOSE
@@ -122,13 +176,19 @@ public class Dashboard extends JFrame {
         addFrame.setVisible(true);
     }
 
-    // SEARCH STUDENT WINDOW
+    // =====================================================
+    // SEARCH STUDENT
+    // =====================================================
+
     private void openSearchStudentWindow() {
 
         JFrame searchFrame =
                 new JFrame("Search Student");
 
-        searchFrame.setSize(500, 400);
+        searchFrame.setSize(
+                500,
+                400
+        );
 
         searchFrame.setDefaultCloseOperation(
                 JFrame.DISPOSE_ON_CLOSE
@@ -141,5 +201,86 @@ public class Dashboard extends JFrame {
         );
 
         searchFrame.setVisible(true);
+    }
+
+    // =====================================================
+    // UPDATE STUDENT
+    // =====================================================
+
+    private void openUpdateStudentWindow() {
+
+        JFrame updateFrame =
+                new JFrame("Update Student");
+
+        updateFrame.setSize(
+                500,
+                500
+        );
+
+        updateFrame.setDefaultCloseOperation(
+                JFrame.DISPOSE_ON_CLOSE
+        );
+
+        updateFrame.setLocationRelativeTo(this);
+
+        updateFrame.add(
+                new UpdateStudentPanel()
+        );
+
+        updateFrame.setVisible(true);
+    }
+
+    // =====================================================
+    // DELETE STUDENT
+    // =====================================================
+
+    private void openDeleteStudentWindow() {
+
+        JFrame deleteFrame =
+                new JFrame("Delete Student");
+
+        deleteFrame.setSize(
+                500,
+                350
+        );
+
+        deleteFrame.setDefaultCloseOperation(
+                JFrame.DISPOSE_ON_CLOSE
+        );
+
+        deleteFrame.setLocationRelativeTo(this);
+
+        deleteFrame.add(
+                new DeleteStudentPanel()
+        );
+
+        deleteFrame.setVisible(true);
+    }
+
+    // =====================================================
+    // ROOM STATUS
+    // =====================================================
+
+    private void openRoomStatusWindow() {
+
+        JFrame roomFrame =
+                new JFrame("Room Status");
+
+        roomFrame.setSize(
+                650,
+                600
+        );
+
+        roomFrame.setDefaultCloseOperation(
+                JFrame.DISPOSE_ON_CLOSE
+        );
+
+        roomFrame.setLocationRelativeTo(this);
+
+        roomFrame.add(
+                new RoomStatusPanel()
+        );
+
+        roomFrame.setVisible(true);
     }
 }
