@@ -336,9 +336,37 @@ The Java application automatically starts the C backend using ProcessBuilder.
 
 ## 🖥️ Application Screenshots
 
-Screenshots will be added here after capturing the application screens.
+### 🔐 Login
 
----
+![Login Screen](screenshots/login.png)
+
+### 👋 Welcome Screen
+
+![Welcome Screen](screenshots/welcome.png)
+
+### 📊 Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+### 👨‍🎓 Add Student
+
+![Add Student](screenshots/add-student.png)
+
+### 🔍 Search Student
+
+![Search Student](screenshots/search-student.png)
+
+### ✏️ Update Student
+
+![Update Student](screenshots/update-student.png)
+
+### 🗑️ Delete Student
+
+![Delete Student](screenshots/delete-student.png)
+
+### 🏠 Room Status
+
+![Room Status](screenshots/room-status.png)
 
 ## 🔑 Key Concepts Demonstrated
 
