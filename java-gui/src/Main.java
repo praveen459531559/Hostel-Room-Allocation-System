@@ -1,5 +1,5 @@
-import gui.Dashboard;
-import javax.swing.SwingUtilities;
+import gui.LoginPanel;
+import javax.swing.*;
 
 public class Main {
 
@@ -7,10 +7,34 @@ public class Main {
 
         SwingUtilities.invokeLater(() -> {
 
-            Dashboard dashboard =
-                    new Dashboard();
+            JFrame frame =
+                    new JFrame(
+                            "Hostel Control System"
+                    );
 
-            dashboard.setVisible(true);
+            frame.setDefaultCloseOperation(
+                    JFrame.EXIT_ON_CLOSE
+            );
+
+            frame.setSize(
+                    1100,
+                    700
+            );
+
+            frame.setMinimumSize(
+                    new java.awt.Dimension(
+                            900,
+                            600
+                    )
+            );
+
+            frame.setLocationRelativeTo(null);
+
+            frame.setContentPane(
+                    new LoginPanel()
+            );
+
+            frame.setVisible(true);
         });
     }
 }

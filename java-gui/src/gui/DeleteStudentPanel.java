@@ -7,172 +7,358 @@ public class DeleteStudentPanel extends JPanel {
 
     private JTextField idField;
 
+    private JLabel statusLabel;
+
+
     public DeleteStudentPanel() {
 
-        setLayout(new GridBagLayout());
+        setBackground(
+                NeoUI.BG
+        );
 
-        setBackground(new Color(245, 247, 250));
+        setLayout(
+                new BorderLayout()
+        );
+
+        buildUI();
+    }
+
+
+    private void buildUI() {
+
+        JPanel page =
+                NeoUI.page(
+                        "DELETE STUDENT",
+                        "Remove a student record from the hostel system."
+                );
+
+
+        JPanel center =
+                new JPanel(
+                        new GridBagLayout()
+                );
+
+        center.setOpaque(false);
+
+
+        NeoUI.NeoCard card =
+                NeoUI.card();
+
+        card.setPreferredSize(
+                new Dimension(
+                        600,
+                        330
+                )
+        );
+
+
+        card.setLayout(
+                new GridBagLayout()
+        );
+
 
         GridBagConstraints gbc =
                 new GridBagConstraints();
 
-        gbc.insets =
-                new Insets(12, 12, 12, 12);
-
         gbc.fill =
                 GridBagConstraints.HORIZONTAL;
 
-        // ===== TITLE =====
+        gbc.weightx = 1;
 
-        JLabel title =
-                new JLabel("DELETE STUDENT");
+        gbc.insets =
+                new Insets(
+                        10,
+                        10,
+                        10,
+                        10
+                );
 
-        title.setFont(
-                new Font("Arial", Font.BOLD, 24)
-        );
 
-        title.setHorizontalAlignment(
-                SwingConstants.CENTER
-        );
+        // Warning
 
         gbc.gridx = 0;
+
         gbc.gridy = 0;
+
         gbc.gridwidth = 2;
 
-        add(title, gbc);
 
-        // ===== STUDENT ID =====
+        JLabel warning =
+                new JLabel(
+                        "⚠  DELETE STUDENT RECORD"
+                );
+
+        warning.setForeground(
+                NeoUI.RED
+        );
+
+        warning.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        18
+                )
+        );
+
+
+        card.add(
+                warning,
+                gbc
+        );
+
+
+        // Description
+
+        gbc.gridy = 1;
+
+
+        JLabel description =
+                new JLabel(
+                        "<html>This action removes the student from the "
+                        + "linked list and hash table.</html>"
+                );
+
+        description.setForeground(
+                NeoUI.MUTED
+        );
+
+        description.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.PLAIN,
+                        12
+                )
+        );
+
+
+        card.add(
+                description,
+                gbc
+        );
+
+
+        // ID
+
+        gbc.gridy = 2;
 
         gbc.gridwidth = 1;
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
 
-        add(
-                new JLabel("Student ID:"),
+
+        card.add(
+                NeoUI.label("STUDENT ID"),
                 gbc
         );
 
-        idField =
-                new JTextField(20);
 
         gbc.gridx = 1;
 
-        add(
+
+        idField =
+                NeoUI.field(18);
+
+
+        card.add(
                 idField,
                 gbc
         );
 
-        // ===== DELETE BUTTON =====
 
-        JButton deleteButton =
-                new JButton("DELETE STUDENT");
+        // Status
 
         gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-
-        add(
-                deleteButton,
-                gbc
-        );
-
-        // ===== CLEAR BUTTON =====
-
-        JButton clearButton =
-                new JButton("CLEAR");
 
         gbc.gridy = 3;
 
-        add(
-                clearButton,
+        gbc.gridwidth = 2;
+
+
+        statusLabel =
+                NeoUI.status(
+                        "Enter the Student ID to remove."
+                );
+
+
+        card.add(
+                statusLabel,
                 gbc
         );
 
-        // ===== ACTIONS =====
+
+        // Delete
+
+        gbc.gridy = 4;
+
+
+        JButton deleteButton =
+                NeoUI.button(
+                        "DELETE STUDENT",
+                        NeoUI.RED
+                );
+
+
+        deleteButton.setPreferredSize(
+                new Dimension(
+                        230,
+                        50
+                )
+        );
+
 
         deleteButton.addActionListener(
                 e -> deleteStudent()
         );
 
-        clearButton.addActionListener(
-                e -> clearField()
+
+        card.add(
+                deleteButton,
+                gbc
         );
+
+
+        center.add(card);
+
+
+        page.add(
+                center,
+                BorderLayout.CENTER
+        );
+
+
+        add(page);
     }
+
 
     private void deleteStudent() {
 
-        String id =
-                idField.getText().trim();
+        String text =
+                idField
+                        .getText()
+                        .trim();
 
-        if (id.isEmpty()) {
 
-            JOptionPane.showMessageDialog(
-                    this,
+        if(text.isEmpty()) {
+
+            showStatus(
                     "Please enter a Student ID.",
-                    "Missing Information",
-                    JOptionPane.WARNING_MESSAGE
+                    NeoUI.RED
             );
 
             return;
         }
 
+
+        int id;
+
+
         try {
 
-            int studentID =
-                    Integer.parseInt(id);
-
-            int choice =
-                    JOptionPane.showConfirmDialog(
-                            this,
-
-                            "Are you sure you want to delete\n"
-                            + "Student ID: " + studentID + "?",
-
-                            "Confirm Delete",
-
-                            JOptionPane.YES_NO_OPTION,
-
-                            JOptionPane.WARNING_MESSAGE
+            id =
+                    Integer.parseInt(
+                            text
                     );
 
-            if (choice == JOptionPane.YES_OPTION) {
+        }
 
-                JOptionPane.showMessageDialog(
+        catch(
+                NumberFormatException e
+        ) {
+
+            showStatus(
+                    "Student ID must contain numbers only.",
+                    NeoUI.RED
+            );
+
+            return;
+        }
+
+
+        int choice =
+                JOptionPane.showConfirmDialog(
                         this,
-
-                        "Delete request accepted!\n\n"
-                        + "Student ID: "
-                        + studentID
-                        + "\n\n"
-                        + "C backend connection "
-                        + "will be added later.",
-
-                        "Delete Student",
-
-                        JOptionPane.INFORMATION_MESSAGE
+                        "Delete student " + id + "?\n\n"
+                        + "This action cannot be undone.",
+                        "Confirm Delete",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE
                 );
 
-                clearField();
-            }
+
+        if(
+                choice !=
+                JOptionPane.YES_OPTION
+        ) {
+
+            return;
+        }
+
+
+        String response =
+                BackendController.deleteStudent(
+                        id
+                );
+
+
+        if(
+                response != null
+                &&
+                response.startsWith(
+                        "SUCCESS|"
+                )
+        ) {
+
+            showStatus(
+                    "✓ " +
+                    response.substring(
+                            "SUCCESS|".length()
+                    ),
+                    NeoUI.GREEN
+            );
+
+
+            idField.setText("");
 
         }
-        catch (NumberFormatException e) {
 
-            JOptionPane.showMessageDialog(
-                    this,
+        else {
 
-                    "Student ID must be a number.",
+            String message =
+                    response == null
+                    ?
+                    "No response from backend."
+                    :
+                    response;
 
-                    "Invalid Input",
 
-                    JOptionPane.ERROR_MESSAGE
+            if(
+                    message.startsWith(
+                            "ERROR|"
+                    )
+            ) {
+
+                message =
+                        message.substring(
+                                "ERROR|".length()
+                        );
+            }
+
+
+            showStatus(
+                    "✕ " + message,
+                    NeoUI.RED
             );
         }
     }
 
-    private void clearField() {
 
-        idField.setText("");
+    private void showStatus(
+            String text,
+            Color color
+    ) {
+
+        statusLabel.setText(text);
+
+        statusLabel.setForeground(color);
     }
 }

@@ -7,150 +7,508 @@ public class SearchStudentPanel extends JPanel {
 
     private JTextField idField;
 
+    private JLabel statusLabel;
+
+    private JLabel idValue;
+    private JLabel nameValue;
+    private JLabel departmentValue;
+    private JLabel yearValue;
+    private JLabel roomValue;
+
+
     public SearchStudentPanel() {
 
-        setLayout(new GridBagLayout());
-
         setBackground(
-                new Color(245, 247, 250)
+                NeoUI.BG
         );
+
+        setLayout(
+                new BorderLayout()
+        );
+
+        buildUI();
+    }
+
+
+    private void buildUI() {
+
+        JPanel page =
+                NeoUI.page(
+                        "SEARCH STUDENT",
+                        "Find complete student information using Student ID."
+                );
+
+
+        JPanel center =
+                new JPanel(
+                        new GridBagLayout()
+                );
+
+        center.setOpaque(false);
+
+
+        NeoUI.NeoCard card =
+                NeoUI.card();
+
+        card.setLayout(
+                new GridBagLayout()
+        );
+
+        card.setPreferredSize(
+                new Dimension(
+                        700,
+                        500
+                )
+        );
+
 
         GridBagConstraints gbc =
                 new GridBagConstraints();
 
-        gbc.insets =
-                new Insets(12, 12, 12, 12);
-
         gbc.fill =
                 GridBagConstraints.HORIZONTAL;
 
-        // TITLE
-        JLabel title =
-                new JLabel("SEARCH STUDENT");
+        gbc.weightx = 1;
 
-        title.setFont(
-                new Font("Arial", Font.BOLD, 24)
-        );
+        gbc.insets =
+                new Insets(
+                        7,
+                        8,
+                        7,
+                        8
+                );
 
-        title.setHorizontalAlignment(
-                SwingConstants.CENTER
-        );
+
+        // ID
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
 
-        add(title, gbc);
-
-        // STUDENT ID LABEL
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-
-        add(
-                new JLabel("Student ID:"),
+        card.add(
+                NeoUI.label("STUDENT ID"),
                 gbc
         );
 
-        // STUDENT ID FIELD
-        idField =
-                new JTextField(20);
 
         gbc.gridx = 1;
 
-        add(
+        idField =
+                NeoUI.field(20);
+
+        card.add(
                 idField,
                 gbc
         );
 
-        // SEARCH BUTTON
+
+        // Search button
+
+        gbc.gridx = 2;
+
         JButton searchButton =
-                new JButton("SEARCH");
+                NeoUI.button(
+                        "SEARCH",
+                        NeoUI.BLUE
+                );
 
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-
-        add(
-                searchButton,
-                gbc
+        searchButton.setPreferredSize(
+                new Dimension(
+                        130,
+                        45
+                )
         );
 
-        // CLEAR BUTTON
-        JButton clearButton =
-                new JButton("CLEAR");
 
-        gbc.gridy = 3;
-
-        add(
-                clearButton,
-                gbc
-        );
-
-        // ACTIONS
         searchButton.addActionListener(
                 e -> searchStudent()
         );
 
-        clearButton.addActionListener(
-                e -> clearField()
+
+        card.add(
+                searchButton,
+                gbc
+        );
+
+
+        // Result title
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+
+        gbc.gridwidth = 3;
+
+        JLabel resultTitle =
+                new JLabel(
+                        "STUDENT RECORD"
+                );
+
+        resultTitle.setForeground(
+                NeoUI.TEXT
+        );
+
+        resultTitle.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        16
+                )
+        );
+
+
+        card.add(
+                resultTitle,
+                gbc
+        );
+
+
+        // Details
+
+        gbc.gridy = 2;
+
+        gbc.gridwidth = 3;
+
+
+        JPanel details =
+                new JPanel(
+                        new GridLayout(
+                                5,
+                                2,
+                                10,
+                                10
+                        )
+                );
+
+        details.setOpaque(false);
+
+
+        idValue =
+                createValue("—");
+
+        nameValue =
+                createValue("—");
+
+        departmentValue =
+                createValue("—");
+
+        yearValue =
+                createValue("—");
+
+        roomValue =
+                createValue("—");
+
+
+        details.add(
+                createDetail(
+                        "STUDENT ID",
+                        idValue
+                )
+        );
+
+
+        details.add(
+                createDetail(
+                        "NAME",
+                        nameValue
+                )
+        );
+
+
+        details.add(
+                createDetail(
+                        "DEPARTMENT",
+                        departmentValue
+                )
+        );
+
+
+        details.add(
+                createDetail(
+                        "YEAR",
+                        yearValue
+                )
+        );
+
+
+        details.add(
+                createDetail(
+                        "ROOM",
+                        roomValue
+                )
+        );
+
+
+        card.add(
+                details,
+                gbc
+        );
+
+
+        // Status
+
+        gbc.gridy = 3;
+
+        statusLabel =
+                NeoUI.status(
+                        "Enter a Student ID and click SEARCH."
+                );
+
+        card.add(
+                statusLabel,
+                gbc
+        );
+
+
+        center.add(card);
+
+
+        page.add(
+                center,
+                BorderLayout.CENTER
+        );
+
+
+        add(page);
+
+
+        idField.addActionListener(
+                e -> searchStudent()
         );
     }
 
+
+    private JPanel createDetail(
+            String title,
+            JLabel value
+    ) {
+
+        NeoUI.NeoCard card =
+                NeoUI.card();
+
+
+        card.setBorder(
+                BorderFactory.createEmptyBorder(
+                        10,
+                        14,
+                        10,
+                        14
+                )
+        );
+
+
+        card.setLayout(
+                new BorderLayout()
+        );
+
+
+        JPanel text =
+                new JPanel();
+
+        text.setOpaque(false);
+
+        text.setLayout(
+                new BoxLayout(
+                        text,
+                        BoxLayout.Y_AXIS
+                )
+        );
+
+
+        JLabel titleLabel =
+                NeoUI.label(title);
+
+
+        text.add(titleLabel);
+
+        text.add(
+                Box.createVerticalStrut(3)
+        );
+
+        text.add(value);
+
+
+        card.add(
+                text,
+                BorderLayout.CENTER
+        );
+
+
+        return card;
+    }
+
+
+    private JLabel createValue(
+            String text
+    ) {
+
+        JLabel label =
+                new JLabel(text);
+
+        label.setForeground(
+                NeoUI.TEXT
+        );
+
+        label.setFont(
+                new Font(
+                        "Segoe UI",
+                        Font.BOLD,
+                        15
+                )
+        );
+
+
+        return label;
+    }
+
+
     private void searchStudent() {
 
-        String id =
-                idField.getText().trim();
+        String text =
+                idField
+                        .getText()
+                        .trim();
 
-        if (id.isEmpty()) {
 
-            JOptionPane.showMessageDialog(
-                    this,
+        if(text.isEmpty()) {
+
+            showStatus(
                     "Please enter a Student ID.",
-                    "Missing Information",
-                    JOptionPane.WARNING_MESSAGE
+                    NeoUI.RED
             );
+
+            clear();
 
             return;
         }
 
+
+        int id;
+
+
         try {
 
-            int studentID =
-                    Integer.parseInt(id);
-
-            JOptionPane.showMessageDialog(
-                    this,
-
-                    "Search request accepted!\n\n"
-                    + "Student ID: "
-                    + studentID
-                    + "\n\n"
-                    + "C backend connection "
-                    + "will be added next.",
-
-                    "Search Student",
-
-                    JOptionPane.INFORMATION_MESSAGE
-            );
+            id =
+                    Integer.parseInt(
+                            text
+                    );
 
         }
-        catch (NumberFormatException e) {
 
-            JOptionPane.showMessageDialog(
-                    this,
+        catch(
+                NumberFormatException e
+        ) {
 
-                    "Student ID must be a number.",
+            showStatus(
+                    "Student ID must contain numbers only.",
+                    NeoUI.RED
+            );
 
-                    "Invalid Input",
+            clear();
 
-                    JOptionPane.ERROR_MESSAGE
+            return;
+        }
+
+
+        String response =
+                BackendController.searchStudent(
+                        id
+                );
+
+
+        if(
+                response != null
+                &&
+                response.startsWith(
+                        "FOUND|"
+                )
+        ) {
+
+            String data =
+                    response.substring(
+                            "FOUND|".length()
+                    );
+
+
+            String[] parts =
+                    data.split(
+                            "\\|",
+                            -1
+                    );
+
+
+            if(parts.length >= 5) {
+
+                idValue.setText(
+                        parts[0]
+                );
+
+                nameValue.setText(
+                        parts[1]
+                );
+
+                departmentValue.setText(
+                        parts[2]
+                );
+
+                yearValue.setText(
+                        parts[3]
+                );
+
+                roomValue.setText(
+                        parts[4]
+                );
+
+
+                showStatus(
+                        "✓ Student record found.",
+                        NeoUI.GREEN
+                );
+
+            }
+
+            else {
+
+                showStatus(
+                        "Invalid data received from backend.",
+                        NeoUI.RED
+                );
+            }
+
+        }
+
+        else {
+
+            clear();
+
+
+            showStatus(
+                    "✕ Student not found.",
+                    NeoUI.RED
             );
         }
     }
 
-    private void clearField() {
 
-        idField.setText("");
+    private void clear() {
+
+        idValue.setText("—");
+
+        nameValue.setText("—");
+
+        departmentValue.setText("—");
+
+        yearValue.setText("—");
+
+        roomValue.setText("—");
+    }
+
+
+    private void showStatus(
+            String text,
+            Color color
+    ) {
+
+        statusLabel.setText(text);
+
+        statusLabel.setForeground(color);
     }
 }

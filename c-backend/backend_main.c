@@ -1,259 +1,754 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
+#include "student.h"
 #include "student_list.h"
+#include "hash_table.h"
 #include "room.h"
 #include "file_handler.h"
 
+
+/* =========================================================
+   Find student by ID
+   ========================================================= */
+
+Student *findStudentByID(int id) {
+
+    Student *temp = getHead();
+
+    while (temp != NULL) {
+
+        if (temp->studentID == id) {
+            return temp;
+        }
+
+        temp = temp->next;
+    }
+
+    return NULL;
+}
+
+
+/* =========================================================
+   MAIN BACKEND
+   ========================================================= */
+
 int main() {
 
-    char command[20];
+    char command[300];
 
-    // Initialize room system
+
+    /* -----------------------------------------------------
+       Initialize rooms and load saved student data
+       ----------------------------------------------------- */
+
     initializeRooms();
 
-    // Load previously saved students
     loadStudents();
 
-    /*
-        Java will send commands through stdin.
 
-        Examples:
+    /* -----------------------------------------------------
+       Tell Java GUI that backend is ready
+       ----------------------------------------------------- */
 
-        ADD|24001|Praveen|CSE|2|F-01
-        SEARCH|24001
-        UPDATE|24001|CSE|3|F-02
-        DELETE|24001
-        ROOMS
-        SAVE
-        EXIT
-    */
+    printf("READY|Backend started\n");
 
-    while (1) {
+    fflush(stdout);
 
-        if (fgets(command, sizeof(command), stdin) == NULL) {
-            break;
-        }
 
-        // Remove newline
-        command[strcspn(command, "\n")] = '\0';
+    /* =====================================================
+       COMMAND LOOP
+       ===================================================== */
 
-        // EXIT
-        if (strcmp(command, "EXIT") == 0) {
+    while (
+        fgets(
+            command,
+            sizeof(command),
+            stdin
+        ) != NULL
+    ) {
 
-            saveStudents();
+        /* Remove newline */
+        command[
+            strcspn(
+                command,
+                "\r\n"
+            )
+        ] = '\0';
 
-            printf("SUCCESS|Backend closed\n");
-            fflush(stdout);
 
-            break;
-        }
+        /* =================================================
+           ADD STUDENT
+           ================================================= */
 
-        // SAVE
-        else if (strcmp(command, "SAVE") == 0) {
+        if (
+            strncmp(
+                command,
+                "ADD|",
+                4
+            ) == 0
+        ) {
 
-            saveStudents();
+            char *token;
 
-            printf("SUCCESS|Data saved\n");
-            fflush(stdout);
-        }
+            char *idToken;
+            char *nameToken;
+            char *departmentToken;
+            char *yearToken;
+            char *roomToken;
 
-        // ADD
-        else if (strncmp(command, "ADD|", 4) == 0) {
 
-            int id;
-            int year;
+            token = command + 4;
 
-            char name[50];
-            char department[30];
-            char room[20];
 
-            int result =
-                sscanf(
-                    command,
-                    "ADD|%d|%49[^|]|%29[^|]|%d|%19[^\n]",
-                    &id,
-                    name,
-                    department,
-                    &year,
-                    room
+            idToken =
+                strtok(
+                    token,
+                    "|"
                 );
 
-            if (result == 5) {
-
-                addStudent(
-                    id,
-                    name,
-                    department,
-                    year,
-                    room
+            nameToken =
+                strtok(
+                    NULL,
+                    "|"
                 );
 
-                saveStudents();
-
-                printf(
-                    "SUCCESS|Student added|%d\n",
-                    id
+            departmentToken =
+                strtok(
+                    NULL,
+                    "|"
                 );
 
-            }
-            else {
+            yearToken =
+                strtok(
+                    NULL,
+                    "|"
+                );
+
+            roomToken =
+                strtok(
+                    NULL,
+                    "|"
+                );
+
+
+            /* Validate command */
+
+            if (
+                idToken == NULL ||
+                nameToken == NULL ||
+                departmentToken == NULL ||
+                yearToken == NULL ||
+                roomToken == NULL
+            ) {
 
                 printf(
                     "ERROR|Invalid ADD command\n"
                 );
+
+                fflush(stdout);
+
+                continue;
             }
+
+
+            int id =
+                atoi(idToken);
+
+            int year =
+                atoi(yearToken);
+
+
+            /* Check duplicate student ID */
+
+            if (
+                findStudentByID(id) != NULL
+            ) {
+
+                printf(
+                    "ERROR|Student ID already exists\n"
+                );
+
+                fflush(stdout);
+
+                continue;
+            }
+
+
+            /* Check room availability */
+
+            if (
+                strcmp(
+                    roomToken,
+                    "NOT ALLOCATED"
+                ) != 0
+            ) {
+
+                if (
+                    !isRoomAvailable(
+                        roomToken
+                    )
+                ) {
+
+                    printf(
+                        "ERROR|Room is not available\n"
+                    );
+
+                    fflush(stdout);
+
+                    continue;
+                }
+            }
+
+
+            /* Add student */
+
+            addStudent(
+                id,
+                nameToken,
+                departmentToken,
+                year,
+                roomToken
+            );
+
+
+            /* Save to file */
+
+            saveStudents();
+
+
+            printf(
+                "SUCCESS|Student added|%d\n",
+                id
+            );
 
             fflush(stdout);
         }
 
-        // SEARCH
-        else if (strncmp(command, "SEARCH|", 7) == 0) {
 
-            int id;
+        /* =================================================
+           SEARCH STUDENT
+           ================================================= */
 
-            if (sscanf(
-                    command,
-                    "SEARCH|%d",
-                    &id
-                ) == 1) {
+        else if (
+            strncmp(
+                command,
+                "SEARCH|",
+                7
+            ) == 0
+        ) {
 
-                Student *temp =
-                    getHead();
+            char *idToken =
+                command + 7;
 
-                int found = 0;
 
-                while (temp != NULL) {
-
-                    if (temp->studentID == id) {
-
-                        printf(
-                            "FOUND|%d|%s|%s|%d|%s\n",
-                            temp->studentID,
-                            temp->name,
-                            temp->department,
-                            temp->year,
-                            temp->roomNumber
-                        );
-
-                        found = 1;
-
-                        break;
-                    }
-
-                    temp = temp->next;
-                }
-
-                if (!found) {
-
-                    printf(
-                        "NOT_FOUND|Student not found\n"
-                    );
-                }
-
-            }
-            else {
+            if (
+                idToken == NULL ||
+                strlen(idToken) == 0
+            ) {
 
                 printf(
                     "ERROR|Invalid SEARCH command\n"
                 );
+
+                fflush(stdout);
+
+                continue;
             }
+
+
+            int id =
+                atoi(idToken);
+
+
+            Student *student =
+                findStudentByID(id);
+
+
+            if (
+                student == NULL
+            ) {
+
+                printf(
+                    "NOT_FOUND|Student not found\n"
+                );
+
+                fflush(stdout);
+
+                continue;
+            }
+
+
+            printf(
+                "FOUND|%d|%s|%s|%d|%s\n",
+                student->studentID,
+                student->name,
+                student->department,
+                student->year,
+                student->roomNumber
+            );
 
             fflush(stdout);
         }
 
-        // UPDATE
-        else if (strncmp(command, "UPDATE|", 7) == 0) {
 
-            int id;
-            int year;
+        /* =================================================
+           UPDATE STUDENT
+           ================================================= */
 
-            char department[30];
-            char room[20];
+        else if (
+            strncmp(
+                command,
+                "UPDATE|",
+                7
+            ) == 0
+        ) {
 
-            int result =
-                sscanf(
-                    command,
-                    "UPDATE|%d|%29[^|]|%d|%19[^\n]",
-                    &id,
-                    department,
-                    &year,
-                    room
+            char *token =
+                command + 7;
+
+
+            char *idToken =
+                strtok(
+                    token,
+                    "|"
                 );
 
-            if (result == 4) {
-
-                updateStudent(
-                    id,
-                    department,
-                    year,
-                    room
+            char *departmentToken =
+                strtok(
+                    NULL,
+                    "|"
                 );
 
-                saveStudents();
-
-                printf(
-                    "SUCCESS|Student updated|%d\n",
-                    id
+            char *yearToken =
+                strtok(
+                    NULL,
+                    "|"
                 );
 
-            }
-            else {
+            char *roomToken =
+                strtok(
+                    NULL,
+                    "|"
+                );
+
+
+            /* Validate */
+
+            if (
+                idToken == NULL ||
+                departmentToken == NULL ||
+                yearToken == NULL ||
+                roomToken == NULL
+            ) {
 
                 printf(
                     "ERROR|Invalid UPDATE command\n"
                 );
+
+                fflush(stdout);
+
+                continue;
             }
+
+
+            int id =
+                atoi(idToken);
+
+            int year =
+                atoi(yearToken);
+
+
+            Student *student =
+                findStudentByID(id);
+
+
+            /* Student doesn't exist */
+
+            if (
+                student == NULL
+            ) {
+
+                printf(
+                    "NOT_FOUND|Student not found\n"
+                );
+
+                fflush(stdout);
+
+                continue;
+            }
+
+
+            /* Check new room */
+
+            if (
+                strcmp(
+                    roomToken,
+                    student->roomNumber
+                ) != 0
+            ) {
+
+                if (
+                    strcmp(
+                        roomToken,
+                        "NOT ALLOCATED"
+                    ) != 0
+                ) {
+
+                    if (
+                        !isRoomAvailable(
+                            roomToken
+                        )
+                    ) {
+
+                        printf(
+                            "ERROR|Room is not available\n"
+                        );
+
+                        fflush(stdout);
+
+                        continue;
+                    }
+                }
+            }
+
+
+            /* Update student */
+
+            updateStudent(
+                id,
+                departmentToken,
+                year,
+                roomToken
+            );
+
+
+            /* Save */
+
+            saveStudents();
+
+
+            printf(
+                "SUCCESS|Student updated|%d\n",
+                id
+            );
 
             fflush(stdout);
         }
 
-        // DELETE
-        else if (strncmp(command, "DELETE|", 7) == 0) {
 
-            int id;
+        /* =================================================
+           DELETE STUDENT
+           ================================================= */
 
-            if (sscanf(
-                    command,
-                    "DELETE|%d",
-                    &id
-                ) == 1) {
+        else if (
+            strncmp(
+                command,
+                "DELETE|",
+                7
+            ) == 0
+        ) {
 
-                deleteStudent(id);
+            char *idToken =
+                command + 7;
 
-                saveStudents();
 
-                printf(
-                    "SUCCESS|Student deleted|%d\n",
-                    id
-                );
-
-            }
-            else {
+            if (
+                idToken == NULL ||
+                strlen(idToken) == 0
+            ) {
 
                 printf(
                     "ERROR|Invalid DELETE command\n"
                 );
+
+                fflush(stdout);
+
+                continue;
             }
+
+
+            int id =
+                atoi(idToken);
+
+
+            Student *student =
+                findStudentByID(id);
+
+
+            if (
+                student == NULL
+            ) {
+
+                printf(
+                    "NOT_FOUND|Student not found\n"
+                );
+
+                fflush(stdout);
+
+                continue;
+            }
+
+
+            deleteStudent(id);
+
+
+            saveStudents();
+
+
+            printf(
+                "SUCCESS|Student deleted|%d\n",
+                id
+            );
 
             fflush(stdout);
         }
 
-        // ROOMS
-        else if (strcmp(command, "ROOMS") == 0) {
 
-            /*
-                Temporary room display.
+        /* =================================================
+           ROOM STATUS
+           ================================================= */
 
-                We will later create a structured
-                room response specifically for Java.
-            */
+        else if (
+            strcmp(
+                command,
+                "ROOMS"
+            ) == 0
+        ) {
 
             displayRooms();
 
+
+            printf(
+                "ROOMS_END\n"
+            );
+
             fflush(stdout);
         }
 
-        // UNKNOWN COMMAND
+
+        /* =================================================
+           STATISTICS
+           
+           Returns:
+           
+           STATS|
+           totalStudents|
+           occupiedBeds|
+           availableBeds|
+           occupiedRooms|
+           availableRooms
+           
+           Example:
+           
+           STATS|15|12|28|8|12
+           ================================================= */
+
+        else if (
+            strcmp(
+                command,
+                "STATS"
+            ) == 0
+        ) {
+
+            int totalStudents = 0;
+
+            int occupiedBeds = 0;
+
+            int occupiedRooms = 0;
+
+
+            /*
+             * F-01 to F-10
+             *
+             * 0 = room not occupied
+             * 1 = room occupied
+             */
+
+            int fRooms[10] = {0};
+
+
+            /*
+             * G-01 to G-10
+             */
+
+            int gRooms[10] = {0};
+
+
+            Student *temp =
+                getHead();
+
+
+            /* ---------------------------------------------
+               Count students and occupied rooms
+               --------------------------------------------- */
+
+            while (
+                temp != NULL
+            ) {
+
+                totalStudents++;
+
+
+                /*
+                 * Student has a room
+                 */
+
+                if (
+                    strcmp(
+                        temp->roomNumber,
+                        "NOT ALLOCATED"
+                    ) != 0
+                ) {
+
+                    occupiedBeds++;
+
+
+                    /* -------------------------------------
+                       F BLOCK
+                       ------------------------------------- */
+
+                    if (
+                        temp->roomNumber[0] == 'F' &&
+                        temp->roomNumber[1] == '-'
+                    ) {
+
+                        int roomNumber =
+                            atoi(
+                                temp->roomNumber + 2
+                            );
+
+
+                        if (
+                            roomNumber >= 1 &&
+                            roomNumber <= 10
+                        ) {
+
+                            if (
+                                fRooms[
+                                    roomNumber - 1
+                                ] == 0
+                            ) {
+
+                                fRooms[
+                                    roomNumber - 1
+                                ] = 1;
+
+
+                                occupiedRooms++;
+                            }
+                        }
+                    }
+
+
+                    /* -------------------------------------
+                       G BLOCK
+                       ------------------------------------- */
+
+                    else if (
+                        temp->roomNumber[0] == 'G' &&
+                        temp->roomNumber[1] == '-'
+                    ) {
+
+                        int roomNumber =
+                            atoi(
+                                temp->roomNumber + 2
+                            );
+
+
+                        if (
+                            roomNumber >= 1 &&
+                            roomNumber <= 10
+                        ) {
+
+                            if (
+                                gRooms[
+                                    roomNumber - 1
+                                ] == 0
+                            ) {
+
+                                gRooms[
+                                    roomNumber - 1
+                                ] = 1;
+
+
+                                occupiedRooms++;
+                            }
+                        }
+                    }
+                }
+
+
+                temp =
+                    temp->next;
+            }
+
+
+            /* ---------------------------------------------
+               Calculate available beds and rooms
+               --------------------------------------------- */
+
+            int availableBeds =
+                40 - occupiedBeds;
+
+
+            int availableRooms =
+                20 - occupiedRooms;
+
+
+            /* ---------------------------------------------
+               Send statistics to Java
+               --------------------------------------------- */
+
+            printf(
+                "STATS|%d|%d|%d|%d|%d\n",
+                totalStudents,
+                occupiedBeds,
+                availableBeds,
+                occupiedRooms,
+                availableRooms
+            );
+
+
+            printf(
+                "STATS_END\n"
+            );
+
+
+            fflush(stdout);
+        }
+
+
+        /* =================================================
+           EXIT
+           ================================================= */
+
+        else if (
+            strcmp(
+                command,
+                "EXIT"
+            ) == 0
+        ) {
+
+            saveStudents();
+
+
+            printf(
+                "SUCCESS|Backend closed\n"
+            );
+
+            fflush(stdout);
+
+
+            break;
+        }
+
+
+        /* =================================================
+           UNKNOWN COMMAND
+           ================================================= */
+
         else {
 
             printf(
@@ -263,6 +758,7 @@ int main() {
             fflush(stdout);
         }
     }
+
 
     return 0;
 }

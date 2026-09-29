@@ -1,280 +1,407 @@
 package gui;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class UpdateStudentPanel extends JPanel {
 
     private JTextField idField;
     private JTextField departmentField;
-    private JTextField yearField;
 
+    private JComboBox<String> yearBox;
     private JComboBox<String> roomBox;
+
+    private JLabel statusLabel;
+
 
     public UpdateStudentPanel() {
 
-        setLayout(new GridBagLayout());
+        setBackground(
+                NeoUI.BG
+        );
 
-        setBackground(new Color(245, 247, 250));
+        setLayout(
+                new BorderLayout()
+        );
+
+        buildUI();
+    }
+
+
+    private void buildUI() {
+
+        JPanel page =
+                NeoUI.page(
+                        "UPDATE STUDENT",
+                        "Modify department, year and room allocation."
+                );
+
+
+        JPanel center =
+                new JPanel(
+                        new GridBagLayout()
+                );
+
+        center.setOpaque(false);
+
+
+        NeoUI.NeoCard card =
+                NeoUI.card();
+
+        card.setPreferredSize(
+                new Dimension(
+                        650,
+                        430
+                )
+        );
+
+
+        card.setLayout(
+                new GridBagLayout()
+        );
+
 
         GridBagConstraints gbc =
                 new GridBagConstraints();
 
-        gbc.insets =
-                new Insets(10, 10, 10, 10);
-
         gbc.fill =
                 GridBagConstraints.HORIZONTAL;
 
-        // ===== TITLE =====
+        gbc.weightx = 1;
 
-        JLabel title =
-                new JLabel("UPDATE STUDENT");
+        gbc.insets =
+                new Insets(
+                        7,
+                        8,
+                        7,
+                        8
+                );
 
-        title.setFont(
-                new Font("Arial", Font.BOLD, 24)
-        );
 
-        title.setHorizontalAlignment(
-                SwingConstants.CENTER
-        );
+        // Student ID
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 2;
 
-        add(title, gbc);
+        card.add(
+                NeoUI.label("STUDENT ID"),
+                gbc
+        );
 
-        // ===== STUDENT ID =====
 
-        gbc.gridwidth = 1;
+        gbc.gridx = 1;
+
+        idField =
+                NeoUI.field(20);
+
+        card.add(
+                idField,
+                gbc
+        );
+
+
+        // Department
 
         gbc.gridx = 0;
         gbc.gridy = 1;
 
-        add(
-                new JLabel("Student ID:"),
+        card.add(
+                NeoUI.label("DEPARTMENT"),
                 gbc
         );
 
-        idField =
-                new JTextField(20);
 
         gbc.gridx = 1;
-
-        add(idField, gbc);
-
-        // ===== DEPARTMENT =====
-
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-
-        add(
-                new JLabel("Department:"),
-                gbc
-        );
 
         departmentField =
-                new JTextField(20);
+                NeoUI.field(20);
 
-        gbc.gridx = 1;
-
-        add(
+        card.add(
                 departmentField,
                 gbc
         );
 
-        // ===== YEAR =====
+
+        // Year
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+
+        card.add(
+                NeoUI.label("YEAR"),
+                gbc
+        );
+
+
+        gbc.gridx = 1;
+
+        yearBox =
+                NeoUI.combo(
+                        new String[]{
+                                "1",
+                                "2",
+                                "3",
+                                "4"
+                        }
+                );
+
+        card.add(
+                yearBox,
+                gbc
+        );
+
+
+        // Room
 
         gbc.gridx = 0;
         gbc.gridy = 3;
 
-        add(
-                new JLabel("Year:"),
+        card.add(
+                NeoUI.label("ROOM NUMBER"),
                 gbc
         );
 
-        yearField =
-                new JTextField(20);
 
         gbc.gridx = 1;
-
-        add(
-                yearField,
-                gbc
-        );
-
-        // ===== ROOM =====
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-
-        add(
-                new JLabel("Room:"),
-                gbc
-        );
-
-        String[] rooms = {
-
-            "NOT ALLOCATED",
-
-            "F-01", "F-02", "F-03", "F-04", "F-05",
-            "F-06", "F-07", "F-08", "F-09", "F-10",
-
-            "G-01", "G-02", "G-03", "G-04", "G-05",
-            "G-06", "G-07", "G-08", "G-09", "G-10"
-        };
 
         roomBox =
-                new JComboBox<>(rooms);
+                NeoUI.combo(
+                        createRooms()
+                );
 
-        gbc.gridx = 1;
-
-        add(
+        card.add(
                 roomBox,
                 gbc
         );
 
-        // ===== UPDATE BUTTON =====
 
-        JButton updateButton =
-                new JButton("UPDATE STUDENT");
+        // Status
 
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 4;
+
         gbc.gridwidth = 2;
 
-        add(
-                updateButton,
+        statusLabel =
+                NeoUI.status(
+                        "Enter the Student ID and new details."
+                );
+
+        card.add(
+                statusLabel,
                 gbc
         );
 
-        // ===== CLEAR BUTTON =====
 
-        JButton clearButton =
-                new JButton("CLEAR");
+        // Button
 
-        gbc.gridy = 6;
+        gbc.gridy = 5;
 
-        add(
-                clearButton,
-                gbc
+        JButton updateButton =
+                NeoUI.button(
+                        "UPDATE STUDENT",
+                        NeoUI.ORANGE
+                );
+
+        updateButton.setPreferredSize(
+                new Dimension(
+                        230,
+                        50
+                )
         );
 
-        // ===== ACTIONS =====
 
         updateButton.addActionListener(
                 e -> updateStudent()
         );
 
-        clearButton.addActionListener(
-                e -> clearFields()
+
+        card.add(
+                updateButton,
+                gbc
         );
+
+
+        center.add(card);
+
+
+        page.add(
+                center,
+                BorderLayout.CENTER
+        );
+
+
+        add(page);
     }
+
+
+    private String[] createRooms() {
+
+        String[] rooms =
+                new String[21];
+
+        rooms[0] =
+                "NOT ALLOCATED";
+
+
+        int index = 1;
+
+
+        for(int i = 1; i <= 10; i++) {
+
+            rooms[index++] =
+                    String.format(
+                            "F-%02d",
+                            i
+                    );
+        }
+
+
+        for(int i = 1; i <= 10; i++) {
+
+            rooms[index++] =
+                    String.format(
+                            "G-%02d",
+                            i
+                    );
+        }
+
+
+        return rooms;
+    }
+
 
     private void updateStudent() {
 
-        String id =
-                idField.getText().trim();
+        String idText =
+                idField
+                        .getText()
+                        .trim();
+
 
         String department =
-                departmentField.getText().trim();
+                departmentField
+                        .getText()
+                        .trim();
 
-        String year =
-                yearField.getText().trim();
 
-        String room =
-                (String) roomBox.getSelectedItem();
+        if(
+                idText.isEmpty()
+                ||
+                department.isEmpty()
+        ) {
 
-        // ===== VALIDATION =====
-
-        if (id.isEmpty()
-                || department.isEmpty()
-                || year.isEmpty()) {
-
-            JOptionPane.showMessageDialog(
-                    this,
+            showStatus(
                     "Please fill all required fields.",
-                    "Missing Information",
-                    JOptionPane.WARNING_MESSAGE
+                    NeoUI.RED
             );
 
             return;
         }
 
+
+        int id;
+
+
         try {
 
-            int studentID =
-                    Integer.parseInt(id);
-
-            int studentYear =
-                    Integer.parseInt(year);
-
-            if (studentYear < 1
-                    || studentYear > 4) {
-
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Year must be between 1 and 4.",
-                        "Invalid Year",
-                        JOptionPane.ERROR_MESSAGE
-                );
-
-                return;
-            }
-
-            // Temporary GUI confirmation.
-            // C backend connection will be added later.
-
-            JOptionPane.showMessageDialog(
-                    this,
-
-                    "Student update request accepted!\n\n"
-                    + "Student ID: "
-                    + studentID
-                    + "\n"
-                    + "Department: "
-                    + department
-                    + "\n"
-                    + "Year: "
-                    + studentYear
-                    + "\n"
-                    + "Room: "
-                    + room
-                    + "\n\n"
-                    + "C backend connection "
-                    + "will be added later.",
-
-                    "Update Student",
-
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-
-            clearFields();
+            id =
+                    Integer.parseInt(
+                            idText
+                    );
 
         }
-        catch (NumberFormatException e) {
 
-            JOptionPane.showMessageDialog(
-                    this,
+        catch(
+                NumberFormatException e
+        ) {
 
-                    "Student ID and Year must be numbers.",
+            showStatus(
+                    "Student ID must contain numbers only.",
+                    NeoUI.RED
+            );
 
-                    "Invalid Input",
+            return;
+        }
 
-                    JOptionPane.ERROR_MESSAGE
+
+        int year =
+                Integer.parseInt(
+                        (String)
+                                yearBox.getSelectedItem()
+                );
+
+
+        String room =
+                (String)
+                        roomBox.getSelectedItem();
+
+
+        String response =
+                BackendController.updateStudent(
+                        id,
+                        department,
+                        year,
+                        room
+                );
+
+
+        if(
+                response != null
+                &&
+                response.startsWith(
+                        "SUCCESS|"
+                )
+        ) {
+
+            showStatus(
+                    "✓ " +
+                    response.substring(
+                            "SUCCESS|".length()
+                    ),
+                    NeoUI.GREEN
+            );
+
+        }
+
+        else {
+
+            String message =
+                    response == null
+                    ?
+                    "No response from backend."
+                    :
+                    response;
+
+
+            if(
+                    message.startsWith(
+                            "ERROR|"
+                    )
+            ) {
+
+                message =
+                        message.substring(
+                                "ERROR|".length()
+                        );
+            }
+
+
+            showStatus(
+                    "✕ " + message,
+                    NeoUI.RED
             );
         }
     }
 
-    private void clearFields() {
 
-        idField.setText("");
+    private void showStatus(
+            String text,
+            Color color
+    ) {
 
-        departmentField.setText("");
+        statusLabel.setText(text);
 
-        yearField.setText("");
-
-        roomBox.setSelectedIndex(0);
+        statusLabel.setForeground(color);
     }
 }
